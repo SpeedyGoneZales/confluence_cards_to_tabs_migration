@@ -1,4 +1,4 @@
-# Migrating from Cards to Tabs macro
+# Atlassian Confluence - migrating from Cards to Tabs macro
 
 This script migrates from the currently used used [Deck of Cards / Card macro](https://apps-docs.servicerocket.com/composition/deck-of-cards) (which is deprecated) to the [Tabs Container / Tabs macro](https://docs.adaptavist.com/cfm4cs/latest/content-formatting-macros/tabs)
 
