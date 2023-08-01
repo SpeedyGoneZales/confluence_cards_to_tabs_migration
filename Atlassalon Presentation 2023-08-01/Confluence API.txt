@@ -1,0 +1,23 @@
+# Example updating a Confluence page using cURL
+# This can be done on Corp using MinGW (comes with Git {SDSK ADD 30375 <GO>}) and relies on jq (https://jqlang.github.io/jq/)
+
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+pageid=432439860
+
+title=$(curl --silent --url "https://cms.prod.bloomberg.com/team/rest/api/content/${pageid}" --header "Content-type: application/json" --user "etec_team_api:${PASWD}" | ./jq.exe -c '.title')
+
+version=$(curl --silent --url "https://cms.prod.bloomberg.com/team/rest/api/content/${pageid}" --header "Content-type: application/json" --user "etec_team_api:${PASWD}" | ./jq.exe -c '.version.number')
+
+version=$((version+1))
+
+echo "{\"id\":\"${pageid}\",\"type\":\"page\", \"title\": $title, \"body\":{\"storage\":{\"value\":" > content.json
+
+curl --silent --url "https://cms.prod.bloomberg.com/team/rest/api/content/${pageid}?expand=body.storage" --header "Content-type: application/json" --user "etec_team_api:${PASWD}" | ./jq.exe -c '.body.storage.value' >> content.json
+
+sed -i 's/<p><em>Special notes: do not trust <\/em><em><ac:link><ri:user ri:userkey=\\"8afee620633cd70701633f5f32d00008\\" \/><\/ac:link>&nbsp;<\/em><\/p>//g' content.json
+
+echo ", \"representation\":\"storage\"}}, \"version\":{\"number\":$version}}" >> content.json
+
+curl --user "etec_team_api:${PASWD}" -X PUT --header 'Content-Type: application/json' -d @content.json --url "https://cms.prod.bloomberg.com/team/rest/api/content/${pageid}"
+
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
